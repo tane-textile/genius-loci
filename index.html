@@ -902,7 +902,7 @@ function showConfirmation(){
     <div class="gl-confirm-actions">
       <button class="gl-btn-secondary" onclick="downloadPattern()">画像ダウンロード</button>
       <button class="gl-btn-primary" onclick="copyCode()">コードをコピー</button>
-      <button class="gl-btn-cart" onclick="window.open('${orderURL}','_blank')">注文フォームへ</button>
+      <button class="gl-btn-cart" onclick="openOrderForm('${orderURL}')">注文フォームへ</button>
       <button class="gl-btn-secondary" onclick="closeConfirmation()">閉じる</button>
     </div>
   `;
@@ -941,6 +941,18 @@ function downloadPattern(){
   ctx.putImageData(imgData,0,0);
   const code=generatePatternCode(gd.lat,gd.lng,gd.seed);
   const a=document.createElement('a');a.download='genius-loci-'+code+'.png';a.href=canvas.toDataURL('image/png');a.click();
+}
+function openOrderForm(url){
+  if(!garmentData)return;
+  const code=generatePatternCode(garmentData.lat,garmentData.lng,garmentData.seed);
+  navigator.clipboard.writeText(code).then(()=>{
+    showToast('パターンコードをコピーしました — フォームに貼り付けてください');
+    window.open(url,'_blank');
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    showToast('パターンコードをコピーしました — フォームに貼り付けてください');
+    window.open(url,'_blank');
+  });
 }
 function copyCode(){
   if(!garmentData)return;
