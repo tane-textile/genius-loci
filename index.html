@@ -178,7 +178,7 @@ html,body{font-family:var(--font-sans);background:var(--ecru);color:var(--sumi);
 </div>
 
 <!-- Lightbox (garment popup) -->
-<div class="gl-lightbox" id="gl-lightbox" onclick="closeLightbox()"><button class="gl-lightbox-close" onclick="closeLightbox()">&times;</button></div>
+<div class="gl-lightbox" id="gl-lightbox" onclick="closeLightbox()" ontouchend="event.preventDefault();closeLightbox()"><button class="gl-lightbox-close" onclick="closeLightbox()">&times;</button></div>
 
 <!-- Toast -->
 <div class="gl-toast" id="gl-toast"></div>
@@ -928,6 +928,7 @@ function showLightbox(){
   closeBtn.className='gl-lightbox-close';
   closeBtn.innerHTML='&times;';
   closeBtn.onclick=(e)=>{e.stopPropagation();closeLightbox();};
+  closeBtn.ontouchend=(e)=>{e.preventDefault();e.stopPropagation();closeLightbox();};
   lb.appendChild(closeBtn);
   lb.classList.add('active');
 }
@@ -1277,6 +1278,8 @@ const sketch=(p)=>{
   };
   p.touchStarted=(e)=>{
     if(galleryOpen)return true;
+    if(document.getElementById('gl-lightbox').classList.contains('active'))return true;
+    if(document.getElementById('gl-confirm-overlay').classList.contains('active'))return true;
     if(p.touches&&p.touches.length>0){p.mouseX=p.touches[0].x;p.mouseY=p.touches[0].y;}
     p.mousePressed();return false;
   };
