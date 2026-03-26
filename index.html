@@ -1128,8 +1128,14 @@ const sketch=(p)=>{
     const gw=gd.w*gScale,gh=gd.h*gScale;
     const gx=(divX-gw)/2,gy=mg+2;
     p.image(garmentImage,gx,gy,gw,gh);
-    // Hover cursor hint for garment image
-    if(p.mouseX>=gx&&p.mouseX<=gx+gw&&p.mouseY>=gy&&p.mouseY<=gy+gh){p.cursor(p.HAND);}
+    // Hover cursor + hint for garment image
+    if(p.mouseX>=gx&&p.mouseX<=gx+gw&&p.mouseY>=gy&&p.mouseY<=gy+gh){
+      p.cursor(p.HAND);
+      p.fill(44,44,44,180);p.noStroke();p.rectMode(p.CENTER);
+      p.rect(gx+gw/2,gy+gh-14,80,16,8);p.rectMode(p.CORNER);
+      p.fill(255);p.textSize(8);p.textAlign(p.CENTER,p.CENTER);
+      p.text('\u30af\u30ea\u30c3\u30af\u3067\u62e1\u5927',gx+gw/2,gy+gh-14);
+    }
     // Coords + code
     const code=generatePatternCode(gd.lat,gd.lng,gd.seed);
     p.noStroke();p.fill(136);p.textSize(8);p.textAlign(p.CENTER,p.TOP);
@@ -1147,7 +1153,7 @@ const sketch=(p)=>{
     const totalTW=gd.patterns.length*(ts+gap)-gap;
     const tStartX=(divX-totalTW)/2;
     p.textAlign(p.CENTER,p.BOTTOM);p.fill(100);p.textSize(8);
-    p.text('Draft Selector  (click / double-click)',divX/2,tY-2);
+    p.text('クリック：拡大  /  ダブルクリック：入れ替え',divX/2,tY-2);
     hoverDraftIdx=-1;
     for(let i=0;i<gd.patterns.length;i++){
       const tx=tStartX+i*(ts+gap),ty=tY;
@@ -1176,10 +1182,14 @@ const sketch=(p)=>{
       p.fill(250);p.stroke(224,221,213);p.strokeWeight(1);
       p.rect(draftX,draftY,draftSz,draftSz,4);
       drawDraftTile(p,ap.drawdown,draftX+4,draftY+4,draftSz-8);
+      // Hover cursor for enlarged draft
+      if(p.mouseX>=draftX&&p.mouseX<=draftX+draftSz&&p.mouseY>=draftY&&p.mouseY<=draftY+draftSz){p.cursor(p.HAND);}
       p.noStroke();p.fill(44);p.textSize(8);p.textAlign(p.CENTER,p.TOP);
       p.text('#'+(selectedDraftIdx+1),draftX+draftSz/2,draftY+draftSz+3);
       p.fill(160);p.textSize(7);
       p.text(ap.width+'\u00d7'+ap.height+'  H:'+(ap.hardness*100).toFixed(0)+'%',draftX+draftSz/2,draftY+draftSz+14);
+      p.fill(124,134,107);p.textSize(7);
+      p.text('\u25b6 \u30af\u30ea\u30c3\u30af\u3067\u4ed6\u306e\u7d44\u7e54\u306b\u5165\u308c\u66ff\u3048',draftX+draftSz/2,draftY+draftSz+24);
       const radarAreaX=draftX+draftSz+8;
       const radarAreaW=divX-radarAreaX-mg;
       const rR=Math.min(radarAreaW/2-22,draftSz/2-4,60);
@@ -1233,6 +1243,23 @@ const sketch=(p)=>{
         const gw=gd.w*gScale,gh=gd.h*gScale;
         const gx=(divX-gw)/2,gy=mg+2;
         if(p.mouseX>=gx&&p.mouseX<=gx+gw&&p.mouseY>=gy&&p.mouseY<=gy+gh){showLightbox();return;}}
+        // Enlarged draft click → open gallery
+        if(selectedDraftIdx>=0){
+          const gd=garmentData,mg=10;
+          const maxGW=divX-mg*2,maxGH=H*0.62;
+          const gScale=Math.min(maxGW/gd.w,maxGH/gd.h);
+          const gw=gd.w*gScale,gh=gd.h*gScale;
+          const gy=mg+2;
+          const barY=gy+gh+16;
+          const ts=34,gap=3;
+          const detailY=barY+20+ts+20;
+          const detailH=H-detailY-50;
+          const draftSz=Math.min(detailH-24,divX*0.30);
+          const draftX=mg+4,draftY=detailY;
+          if(p.mouseX>=draftX&&p.mouseX<=draftX+draftSz&&p.mouseY>=draftY&&p.mouseY<=draftY+draftSz){
+            openGallery(selectedDraftIdx);return;
+          }
+        }
         // Draft tile
         const tappedIdx=getTileHit(p.mouseX,p.mouseY);
         if(tappedIdx>=0){
