@@ -924,6 +924,11 @@ function showLightbox(){
   for(let i=0;i<garmentImage.pixels.length;i++)imgData.data[i]=garmentImage.pixels[i];
   ctx.putImageData(imgData,0,0);
   lb.appendChild(canvas);
+  const closeBtn=document.createElement('button');
+  closeBtn.className='gl-lightbox-close';
+  closeBtn.innerHTML='&times;';
+  closeBtn.onclick=(e)=>{e.stopPropagation();closeLightbox();};
+  lb.appendChild(closeBtn);
   lb.classList.add('active');
 }
 function closeLightbox(){
